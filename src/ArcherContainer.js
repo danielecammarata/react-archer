@@ -7,6 +7,7 @@ import Point from './Point';
 import SvgArrow from './SvgArrow';
 
 type Props = {
+  endPlug: string,
   arrowLength: number,
   arrowThickness: number,
   strokeColor: string,
@@ -102,6 +103,7 @@ export class ArcherContainer extends React.Component<Props, State> {
   }
 
   static defaultProps = {
+    endPlug: 'arrow',
     arrowLength: 10,
     arrowThickness: 6,
     strokeColor: '#f00',
@@ -219,7 +221,11 @@ export class ArcherContainer extends React.Component<Props, State> {
       const strokeColor =
         (style && style.strokeColor) || this.props.strokeColor;
 
-      const arrowLength =
+      const selectionType =
+        (style && style.endPlug) || this.props.endPlug;
+      
+      const arrowLength = selectionType === 'circle' ?
+        ((style && style.arrowThickness) || this.props.arrowThickness) / 2 :
         (style && style.arrowLength) || this.props.arrowLength;
 
       const strokeWidth =
@@ -287,6 +293,13 @@ export class ArcherContainer extends React.Component<Props, State> {
       const arrowPath = `M0,0 L0,${arrowThickness} L${arrowLength -
         1},${arrowThickness / 2} z`;
 
+      const path =  <path d={arrowPath} fill={strokeColor} />
+
+      const circle = <circle cx={arrowThickness / 2} cy={arrowThickness / 2} r={arrowThickness / 2} fill={strokeColor} />
+
+      const selectionType =
+        (style && style.endPlug) || this.props.endPlug;
+
       return (
         <marker
           id={this.getMarkerId(source, target)}
@@ -298,7 +311,11 @@ export class ArcherContainer extends React.Component<Props, State> {
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <path d={arrowPath} fill={strokeColor} />
+          {
+            selectionType === 'circle' ?
+              circle :
+              path
+          }
         </marker>
       );
     });
